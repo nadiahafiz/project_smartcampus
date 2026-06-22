@@ -1,0 +1,18 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" 
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+  <groupId>com.smartcampus</groupId>
+  <artifactId>smartcampus-parent</artifactId>
+  <version>0.0.1-SNAPSHOT</version>
+  <packaging>pom</packaging>
+  <name>SmartCampus Connect</name>
+  
+  <modules>
+    <module>student-profile-service</module>
+    <module>course-enrolment-service</module>
+    <module>notification-service</module>
+    <module>library-booking-service</module>
+    <module>reporting-analytics-service</module>
+  </modules>
+</project>
