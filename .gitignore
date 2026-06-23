@@ -1,1 +1,8 @@
 /target/
+*.properties
+course-enrolment-service/target/classes/META-INF/maven/com.smartcampus/course-enrolment-service/pom.properties
+library-booking-service/target/classes/META-INF/maven/com.smartcampus/library-booking-service/pom.properties
+notification-service/target/classes/META-INF/maven/com.smartcampus/notification-service/pom.properties
+reporting-analytics-service/target/classes/META-INF/maven/com.smartcampus/reporting-analytics-service/pom.properties
+student-profile-service/target/classes/META-INF/maven/com.smartcampus/student-profile-service/pom.properties
+student-profile-service/target/classes/META-INF/maven/com.smartcampus/student-profile-service/pom.properties
