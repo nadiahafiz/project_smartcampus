@@ -13,3 +13,4 @@ student-profile-service/target/classes/META-INF/maven/com.smartcampus/student-pr
 **/.classpath
 **/.project
 >>>>>>> main
+/bin/

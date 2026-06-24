@@ -4,7 +4,6 @@ public class ProgrammeReportDTO {
     private String programmeName;
     private long studentCount;
 
-    // Make sure you have this constructor!
     public ProgrammeReportDTO(String programmeName, long studentCount) {
         this.programmeName = programmeName;
         this.studentCount = studentCount;
