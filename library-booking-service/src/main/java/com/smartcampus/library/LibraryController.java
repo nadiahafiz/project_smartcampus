@@ -1,7 +1,7 @@
 package com.smartcampus.library;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
-import java.util.ArrayList;
 import java.util.List;
 
 @RestController
@@ -9,17 +9,16 @@ import java.util.List;
 @CrossOrigin(origins = "*") 
 public class LibraryController {
 
-    private static List<Booking> bookingList = new ArrayList<>();
+    @Autowired
+    private BookingRepository bookingRepository;
 
     @PostMapping("/bookings")
     public Booking createBooking(@RequestBody Booking newBooking) {
-        bookingList.add(newBooking);
-        System.out.println("New booking received for Student ID: " + newBooking.getStudentId());
-        return newBooking;
+        return bookingRepository.save(newBooking);
     }
 
     @GetMapping("/bookings")
     public List<Booking> getAllBookings() {
-        return bookingList;
+        return bookingRepository.findAll();
     }
 }
