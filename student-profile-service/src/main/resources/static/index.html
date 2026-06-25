@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SmartCampus - Student Profile Service</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body class="bg-light">
+
+    <nav class="navbar navbar-dark bg-dark mb-4">
+        <div class="container">
+            <span class="navbar-brand mb-0 h1">SmartCampus Student Hub</span>
+        </div>
+    </nav>
+
+    <div class="container">
+        <div class="row">
+            <div class="col-md-5 mb-4">
+                <div class="card p-4 shadow-sm">
+                    <h5>Register New Student</h5>
+                    <hr>
+                    <form id="studentForm">
+                        <div class="mb-3">
+                            <label class="form-label">Student ID</label>
+                            <input type="text" id="studentId" class="form-control" placeholder="e.g., B032510546" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Full Name</label>
+                            <input type="text" id="name" class="form-control" placeholder="e.g., Airin Farisha" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Campus Email</label>
+                            <input type="email" id="email" class="form-control" placeholder="e.g., airin@smartcampus.edu" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Major / Course</label>
+                            <input type="text" id="major" class="form-control" placeholder="e.g., Computer Science" required>
+                        </div>
+                        <button type="submit" class="btn btn-primary w-100">Save Profile</button>
+                    </form>
+                </div>
+            </div>
+
+            <div class="col-md-7">
+                <div class="card p-4 shadow-sm">
+                    <h5>Registered Students Directory</h5>
+                    <hr>
+                    <table class="table table-striped table-hover">
+                        <thead class="table-light">
+                            <tr>
+                                <th>Student ID</th>
+                                <th>Name</th>
+                                <th>Email</th>
+                                <th>Major</th>
+                            </tr>
+                        </thead>
+                        <tbody id="studentTableBody">
+                            </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const API_URL = 'http://localhost:8080/api/students';
+
+        // 1. Fetch data from backend on page load
+        document.addEventListener('DOMContentLoaded', fetchStudents);
+
+        async function fetchStudents() {
+            try {
+                const response = await fetch(API_URL);
+                if (response.ok) {
+                    const students = await response.json();
+                    const tableBody = document.getElementById('studentTableBody');
+                    tableBody.innerHTML = ''; // Clear previous contents
+
+                    students.forEach(student => {
+                        const row = `
+                            <tr>
+                                <td class="fw-bold text-secondary">${student.studentId}</td>
+                                <td>${student.name}</td>
+                                <td>${student.email}</td>
+                                <td><span class="badge bg-secondary">${student.major}</span></td>
+                            </tr>
+                        `;
+                        tableBody.innerHTML += row;
+                    });
+                }
+            } catch (error) {
+                console.error('Error loading student profiles:', error);
+            }
+        }
+
+        // 2. Intercept submit action to send a POST request
+        document.getElementById('studentForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+
+            // Match your Java Entity fields perfectly!
+            const studentData = {
+                studentId: document.getElementById('studentId').value,
+                name: document.getElementById('name').value,
+                email: document.getElementById('email').value,
+                major: document.getElementById('major').value
+            };
+
+            try {
+                const response = await fetch(API_URL, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(studentData)
+                });
+
+                if (response.ok) {
+                    document.getElementById('studentForm').reset(); // Clear input elements
+                    fetchStudents(); // Refresh table view smoothly
+                } else {
+                    alert('Failed to save profile. Check server requirements.');
+                }
+            } catch (error) {
+                console.error('Network transaction failed:', error);
+            }
+        });
+    </script>
+</body>
+</html>

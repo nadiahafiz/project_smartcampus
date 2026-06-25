@@ -24,8 +24,10 @@ public class StudentController {
     }
 
     // 2. GET a Student Profile by ID from H2
+ // 2. GET a Student Profile by ID from H2
     @GetMapping("/{id}")
-    public ResponseEntity<Student> getStudentById(@PathVariable(name = "id") Long id) {
+    public ResponseEntity<Student> getStudentById(@PathVariable(name = "id") String id) {
+        // Spring Data JPA findById still looks for whatever field has the @Id annotation!
         Optional<Student> student = studentRepository.findById(id);
         
         if (student.isPresent()) {
