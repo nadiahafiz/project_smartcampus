@@ -5,5 +5,5 @@
     <artifactId>smartcampus-parent</artifactId>
     <version>0.0.1-SNAPSHOT</version>
   </parent>
-  <artifactId>reporting-analytics-service</artifactId>
+  <artifactId>notification-service</artifactId>
 </project>
