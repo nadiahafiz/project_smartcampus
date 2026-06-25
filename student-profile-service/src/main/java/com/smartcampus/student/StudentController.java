@@ -1,37 +1,43 @@
 package com.smartcampus.student;
 
-import org.springframework.web.bind.annotation.*;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import java.util.concurrent.ConcurrentHashMap;
+import org.springframework.web.bind.annotation.*;
 import java.util.Collection;
+import java.util.Optional;
 
+@CrossOrigin(origins = "*") // Allows your HTML UI to talk to this backend
 @RestController
-@RequestMapping("/students")
+@RequestMapping("/api/students")
 public class StudentController {
 
-    private final ConcurrentHashMap<String, Student> studentDatabase = new ConcurrentHashMap<>();
+    @Autowired
+    private StudentRepository studentRepository; // 👈 Connects directly to your database driver
 
+    // 1. CREATE a new Student Profile in H2
     @PostMapping
     public ResponseEntity<Student> createStudent(@RequestBody Student student) {
-        if (student.getId() == null || studentDatabase.containsKey(student.getId())) {
-            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
-        }
-        studentDatabase.put(student.getId(), student);
-        return new ResponseEntity<>(student, HttpStatus.CREATED);
+        // Save the student object directly into the H2 database table
+        Student savedStudent = studentRepository.save(student);
+        return new ResponseEntity<>(savedStudent, HttpStatus.CREATED);
     }
 
+    // 2. GET a Student Profile by ID from H2
     @GetMapping("/{id}")
-    public ResponseEntity<Student> getStudentById(@PathVariable(name = "id") String id) {
-        Student student = studentDatabase.get(id);
-        if (student == null) {
+    public ResponseEntity<Student> getStudentById(@PathVariable(name = "id") Long id) {
+        Optional<Student> student = studentRepository.findById(id);
+        
+        if (student.isPresent()) {
+            return new ResponseEntity<>(student.get(), HttpStatus.OK);
+        } else {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
-        return new ResponseEntity<>(student, HttpStatus.OK);
     }
 
+    // 3. GET all Student Profiles from H2
     @GetMapping
     public Collection<Student> getAllStudents() {
-        return studentDatabase.values();
+        return studentRepository.findAll();
     }
 }

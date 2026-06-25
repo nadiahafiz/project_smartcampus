@@ -1,26 +1,30 @@
 package com.smartcampus.student;
 
-public class Student {
-    private String id;
-    private String name;
-    private String email;
-    private String major;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
 
+@Entity // 👈 This tells Spring Boot to create a table named "STUDENT" in H2!
+public class Student {
+
+    @Id // 👈 This marks this field as the Primary Key
+    @GeneratedValue(strategy = GenerationType.IDENTITY) // 👈 Automatically increments IDs (1, 2, 3...)
+    private Long id;
+    
+    private String name;
+    private String email; // Add whatever fields you have!
+
+    // --- No-Args Constructor (Required by JPA) ---
     public Student() {}
 
-    public Student(String id, String name, String email, String major) {
-        this.id = id;
-        this.name = name;
-        this.email = email;
-        this.major = major;
-    }
+    // --- Getters and Setters ---
+    public Long getId() { return id; }
+    public void setId(Long id) { this.id = id; }
 
-    public String getId() { return id; }
-    public void setId(String id) { this.id = id; }
     public String getName() { return name; }
     public void setName(String name) { this.name = name; }
+
     public String getEmail() { return email; }
     public void setEmail(String email) { this.email = email; }
-    public String getMajor() { return major; }
-    public void setMajor(String major) { this.major = major; }
 }
