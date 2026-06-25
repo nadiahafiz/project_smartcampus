@@ -1,6 +1,13 @@
 package com.smartcampus.enrolment.model;
 
+import jakarta.persistence.Entity;
+import jakarta.persistence.Id;
+import jakarta.persistence.Table;
+
+@Entity
+@Table(name = "courses") // Creates a table named 'courses' in H2
 public class Course {
+    @Id // Sets courseCode as the Primary Key
     private String courseCode;
     private String courseName;
     private int capacity;
@@ -19,4 +26,5 @@ public class Course {
     public int getCapacity() { return capacity; }
     public int getEnrolledCount() { return enrolledCount; }
     public void setEnrolledCount(int enrolledCount) { this.enrolledCount = enrolledCount; }
+    public Course() {} // JPA requires an empty constructor!
 }
