@@ -1,25 +1,28 @@
 package com.smartcampus.library;
 
 import javax.persistence.Entity;
-import javax.persistence.Id;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
+import javax.persistence.Id;
 
 @Entity
 public class Booking {
-    
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id; // ID Utama auto-increment
+    private Long id;
     
     private String studentId;
     private String roomNumber;
+    private String bookingDate; // Tambahan pembolehubah tarikh baru
 
+    // Constructor wajib untuk JPA
     public Booking() {}
 
-    public Booking(String studentId, String roomNumber) {
+    public Booking(String studentId, String roomNumber, String bookingDate) {
         this.studentId = studentId;
         this.roomNumber = roomNumber;
+        this.bookingDate = bookingDate;
     }
 
     // Getter dan Setter
@@ -31,4 +34,7 @@ public class Booking {
 
     public String getRoomNumber() { return roomNumber; }
     public void setRoomNumber(String roomNumber) { this.roomNumber = roomNumber; }
+
+    public String getBookingDate() { return bookingDate; }
+    public void setBookingDate(String bookingDate) { this.bookingDate = bookingDate; }
 }
