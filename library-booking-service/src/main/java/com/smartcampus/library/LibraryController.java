@@ -6,19 +6,35 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/library")
-@CrossOrigin(origins = "*") 
+@CrossOrigin(origins = "*")
 public class LibraryController {
 
     @Autowired
     private BookingRepository bookingRepository;
 
-    @PostMapping("/bookings")
-    public Booking createBooking(@RequestBody Booking newBooking) {
-        return bookingRepository.save(newBooking);
-    }
+    @Autowired
+    private BookLoanRepository bookLoanRepository;
+
 
     @GetMapping("/bookings")
     public List<Booking> getAllBookings() {
         return bookingRepository.findAll();
+    }
+
+    @PostMapping("/bookings")
+    public Booking createBooking(@RequestBody Booking booking) {
+        return bookingRepository.save(booking);
+    }
+
+
+    @GetMapping("/loans")
+    public List<BookLoan> getAllLoans() {
+        return bookLoanRepository.findAll();
+    }
+
+    @PostMapping("/loans")
+    public BookLoan createLoan(@RequestBody BookLoan loan) {
+        loan.setLoanStatus("Borrowed"); 
+        return bookLoanRepository.save(loan);
     }
 }
