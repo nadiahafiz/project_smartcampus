@@ -1,0 +1,15 @@
+<!DOCTYPE html>
+<html>
+<body>
+    <h1>Reporting Dashboard</h1>
+    <div id="data">Loading...</div>
+    <script>
+        // This calls your API and shows the result in Chrome
+        fetch('/api/reports/enrolment-by-programme')
+            .then(response => response.json())
+            .then(data => {
+                document.getElementById('data').innerText = JSON.stringify(data);
+            });
+    </script>
+</body>
+</html>
