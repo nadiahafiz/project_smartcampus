@@ -11,10 +11,12 @@ import org.springframework.web.client.RestTemplate;
 import org.springframework.web.client.HttpClientErrorException;
 
 import jakarta.annotation.PostConstruct;
+import java.util.HashMap;  // 🛠️ Added for notification payload mapping
+import java.util.Map;      // 🛠️ Added for notification payload mapping
 import java.util.List;
 
 @RestController
-@CrossOrigin(origins = "*") // Crucial link for your HTML UI
+@CrossOrigin(origins = "*") 
 @RequestMapping("/api/enrolments")
 public class EnrolmentController {
 
@@ -31,17 +33,11 @@ public class EnrolmentController {
         }
     }
 
-    // ==========================================
-    // REQUIREMENT FUNCTION: READ/CAPACITY CHECKS
-    // ==========================================
     @GetMapping("/courses")
     public List<Course> getAllCourses() {
         return courseRepository.findAll();
     }
 
-    // ==========================================
-    // REQUIREMENT FUNCTION: ADD COURSE UTILITY
-    // ==========================================
     @PostMapping("/courses")
     public ResponseEntity<String> addNewCourse(@RequestBody Course newCourse) {
         if (courseRepository.existsById(newCourse.getCourseCode())) {
@@ -64,7 +60,6 @@ public class EnrolmentController {
             return new ResponseEntity<>("Course not found", HttpStatus.NOT_FOUND);
         }
 
-        // Capacity check validation
         if (course.getEnrolledCount() >= course.getCapacity()) {
             return new ResponseEntity<>("Course is full!", HttpStatus.BAD_REQUEST);
         }
@@ -77,6 +72,18 @@ public class EnrolmentController {
                 // Increment seat count
                 course.setEnrolledCount(course.getEnrolledCount() + 1);
                 courseRepository.save(course); 
+                
+                // 🛠️ FIRE AUTOMATIC ENROLMENT NOTIFICATION payload to port 8083
+                try {
+                    Map<String, String> noti = new HashMap<>();
+                    noti.put("studentId", studentId);
+                    noti.put("alertType", "Course Enrolment");
+                    noti.put("message", "Successfully enrolled in " + courseCode + " - " + course.getCourseName());
+                    
+                    restTemplate.postForEntity("http://localhost:8083/api/notifications", noti, String.class);
+                } catch (Exception e) {
+                    System.out.println("Notification server down, but enrolment succeeded.");
+                }
                 
                 return new ResponseEntity<>("Enrolment successful for student " + studentId + " in " + courseCode, HttpStatus.CREATED);
             }
@@ -102,7 +109,6 @@ public class EnrolmentController {
             return new ResponseEntity<>("Course not found", HttpStatus.NOT_FOUND);
         }
 
-        // Check if there's actually anyone registered to drop
         if (course.getEnrolledCount() <= 0) {
             return new ResponseEntity<>("Cannot drop: No students are currently registered in this course.", HttpStatus.BAD_REQUEST);
         }
@@ -115,6 +121,18 @@ public class EnrolmentController {
                 // Decrement seat count safely
                 course.setEnrolledCount(course.getEnrolledCount() - 1);
                 courseRepository.save(course);
+                
+                // 🛠️ FIRE AUTOMATIC DROP NOTIFICATION payload to port 8083
+                try {
+                    Map<String, String> noti = new HashMap<>();
+                    noti.put("studentId", studentId);
+                    noti.put("alertType", "Course Enrolment");
+                    noti.put("message", "Successfully dropped course: " + courseCode);
+                    
+                    restTemplate.postForEntity("http://localhost:8083/api/notifications", noti, String.class);
+                } catch (Exception e) {
+                    System.out.println("Notification server down, but drop transaction completed.");
+                }
                 
                 return new ResponseEntity<>("Course " + courseCode + " dropped successfully for student " + studentId, HttpStatus.OK);
             }
