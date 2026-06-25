@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SmartCampus - Library Booking Service</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body class="bg-light">
+
+    <nav class="navbar navbar-dark bg-dark mb-4">
+        <div class="container">
+            <span class="navbar-brand mb-0 h1">SmartCampus Library Hub</span>
+        </div>
+    </nav>
+
+    <div class="container">
+        <div class="row">
+            <div class="col-md-5 mb-4">
+                <div class="card p-4 shadow-sm">
+                    <h5>Discussion Room Reservation</h5>
+                    <hr>
+                    <form id="bookingForm">
+                        <div class="mb-3">
+                            <label class="form-label">Student ID</label>
+                            <input type="text" id="studentId" class="form-control" placeholder="e.g., SU12345" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Select Room</label>
+                            <select id="roomNumber" class="form-select">
+                                <option value="Discussion Room A-01">Discussion Room A-01</option>
+                                <option value="Discussion Room B-02">Discussion Room B-02</option>
+                                <option value="Discussion Room C-03">Discussion Room C-03</option>
+                            </select>
+                        </div>
+                        <button type="submit" class="btn btn-primary w-100">Submit Reservation</button>
+                    </form>
+                </div>
+            </div>
+
+            <div class="col-md-7">
+                <div class="card p-4 shadow-sm">
+                    <h5>Active Reservations List</h5>
+                    <hr>
+                    <table class="table table-striped table-hover">
+                        <thead class="table-light">
+                            <tr>
+                                <th>Student ID</th>
+                                <th>Room Number</th>
+                            </tr>
+                        </thead>
+                        <tbody id="bookingTableBody">
+                            </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>

@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SmartCampus - Course Enrolment Service</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body class="bg-light">
+
+    <nav class="navbar navbar-dark bg-dark mb-4">
+        <div class="container">
+            <span class="navbar-brand mb-0 h1">🏫 SmartCampus Course Enrolment Hub</span>
+        </div>
+    </nav>
+
+    <div class="container">
+        <h3 class="mb-4 text-secondary">Course Enrolment Management</h3>
+        
+        <div class="row">
+            <div class="col-md-5 mb-4">
+                
+                <div class="card p-4 shadow-sm mb-4">
+                    <h5>Student Semester Registration</h5>
+                    <hr>
+                    <form id="enrolmentForm">
+                        <div class="mb-3">
+                            <label class="form-label">Student ID</label>
+                            <input type="text" id="enrolStudentId" class="form-control" placeholder="e.g., B543" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Course Code</label>
+                            <input type="text" id="enrolCourseCode" class="form-control" placeholder="e.g., BITP3113" required>
+                        </div>
+                        <div class="d-flex gap-2">
+                            <button type="button" onclick="handleEnrol()" class="btn btn-success w-50">Enrol Course</button>
+                            <button type="button" onclick="handleDrop()" class="btn btn-danger w-50">Drop Course</button>
+                        </div>
+                    </form>
+                    <div id="enrolMessage" class="alert mt-3 p-2" style="display: none; font-size: 14px;"></div>
+                </div>
+
+                <div class="card p-4 shadow-sm">
+                    <h5 class="text-muted">Admin Utility: Add New Course</h5>
+                    <hr>
+                    <form id="addCourseForm">
+                        <div class="mb-3">
+                            <label class="form-label">Course Code</label>
+                            <input type="text" id="newCourseCode" class="form-control" placeholder="e.g., BITP3133" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Course Name</label>
+                            <input type="text" id="newCourseName" class="form-control" placeholder="e.g., Cloud Security" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Seat Capacity</label>
+                            <input type="number" id="newCourseCapacity" class="form-control" placeholder="e.g., 40" required>
+                        </div>
+                        <button type="button" onclick="handleCreateCourse()" class="btn btn-secondary w-100">Add Course to System</button>
+                    </form>
+                </div>
+
+            </div>
+
+            <div class="col-md-7">
+                <div class="card p-4 shadow-sm">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <h5>Course Catalog & Capacity Tracker</h5>
+                        <button onclick="loadCourses()" class="btn btn-sm btn-outline-secondary">🔄 Refresh</button>
+                    </div>
+                    <hr>
+                    <table class="table table-striped table-hover">
+                        <thead class="table-light">
+                            <tr>
+                                <th>Code</th>
+                                <th>Course Title</th>
+                                <th>Enrolled / Max Capacity</th>
+                            </tr>
+                        </thead>
+                        <tbody id="courseTableBody">
+                            </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const COURSE_API_BASE = "http://localhost:8081/api/enrolments";
+
+        // Auto-fetch data right when page opens
+        window.onload = function() {
+            loadCourses();
+        };
+
+        // 1. GET ALL COURSES WITH LIVE H2 CAPACITY TRACKING
+        async function loadCourses() {
+            const tableBody = document.getElementById("courseTableBody");
+            try {
+                const response = await fetch(`${COURSE_API_BASE}/courses`);
+                if (response.ok) {
+                    const courses = await response.json();
+                    tableBody.innerHTML = ""; 
+                    courses.forEach(course => {
+                        tableBody.innerHTML += `
+                            <tr>
+                                <td><strong>${course.courseCode}</strong></td>
+                                <td>${course.courseName}</td>
+                                <td>
+                                    <span class="badge ${course.enrolledCount >= course.capacity ? 'bg-danger' : 'bg-primary'}">
+                                        ${course.enrolledCount} / ${course.capacity} occupied
+                                    </span>
+                                </td>
+                            </tr>`;
+                    });
+                }
+            } catch (error) {
+                tableBody.innerHTML = `<tr><td colspan="3" class="text-danger text-center">Enrolment service offline (Check Port 8081)</td></tr>`;
+            }
+        }
+
+        // 2. POST REGISTER/ENROL METHOD
+        async function handleEnrol() {
+            const studentId = document.getElementById("enrolStudentId").value;
+            const courseCode = document.getElementById("enrolCourseCode").value;
+            clearMessage();
+
+            if (!studentId || !courseCode) return alert("Please fill in enrolment details.");
+
+            try {
+                const response = await fetch(`${COURSE_API_BASE}/enrol`, {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ studentId, courseCode })
+                });
+                const msgText = await response.text();
+                showMessage(msgText, response.ok ? "alert-success" : "alert-danger");
+                loadCourses(); 
+            } catch (err) {
+                showMessage("Connection error. Is Course Service running?", "alert-danger");
+            }
+        }
+
+        // 3. POST DROP COURSE METHOD
+        async function handleDrop() {
+            const studentId = document.getElementById("enrolStudentId").value;
+            const courseCode = document.getElementById("enrolCourseCode").value;
+            clearMessage();
+
+            if (!studentId || !courseCode) return alert("Please fill in details.");
+
+            try {
+                const response = await fetch(`${COURSE_API_BASE}/drop`, {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ studentId, courseCode })
+                });
+                const msgText = await response.text();
+                showMessage(msgText, response.ok ? "alert-success" : "alert-danger");
+                loadCourses(); 
+            } catch (err) {
+                showMessage("Connection error. Is Course Service running?", "alert-danger");
+            }
+        }
+
+        // 4. POST UTILITY: ADMIN CREATE COURSE
+        async function handleCreateCourse() {
+            const courseCode = document.getElementById("newCourseCode").value;
+            const courseName = document.getElementById("newCourseName").value;
+            const capacity = document.getElementById("newCourseCapacity").value;
+
+            if(!courseCode || !courseName || !capacity) return alert("Please provide all course information.");
+
+            try {
+                const response = await fetch(`${COURSE_API_BASE}/courses`, {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ courseCode, courseName, capacity })
+                });
+                const msgText = await response.text();
+                alert(msgText);
+                if(response.ok) {
+                    document.getElementById("addCourseForm").reset();
+                    loadCourses();
+                }
+            } catch (err) {
+                alert("Could not register course. Verify backend service status.");
+            }
+        }
+
+        // Response message helpers
+        function showMessage(txt, bootstrapClass) {
+            const box = document.getElementById("enrolMessage");
+            box.innerText = txt;
+            box.className = `alert mt-3 p-2 ${bootstrapClass}`;
+            box.style.display = "block";
+        }
+
+        function clearMessage() {
+            document.getElementById("enrolMessage").style.display = "none";
+        }
+    </script>
+</body>
+</html>
