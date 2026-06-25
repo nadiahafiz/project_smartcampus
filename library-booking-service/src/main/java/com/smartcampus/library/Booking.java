@@ -1,4 +1,4 @@
-package com.smartcampus.library;
+package src.main.java.com.smartcampus.library;
 
 import javax.persistence.Entity;
 import javax.persistence.Id;
