@@ -8,7 +8,7 @@ public class ProgrammeReportDTO {
         this.programmeName = programmeName;
         this.studentCount = studentCount;
     }
-    
+
     // Getters
     public String getProgrammeName() { return programmeName; }
     public long getStudentCount() { return studentCount; }
